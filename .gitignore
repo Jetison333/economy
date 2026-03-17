@@ -1,0 +1,42 @@
+# Blazor / ASP.NET Core
+bin/
+obj/
+.vs/
+.vscode/
+*.dll
+*.exe
+*.pdb
+*.runtimeconfig.json
+*.deps.json
+*.staticwebassets.endpoints.json
+*.staticwebassets.runtime.json
+
+# Visual Studio
+.vsconfig
+.csproj.user
+*.user
+.DS_Store
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Xx]64/
+[Xx]86/
+[Ww][Ii][Nn]32/
+[Ww][Ii][Nn]64/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Environment files
+.env
+.env.local
