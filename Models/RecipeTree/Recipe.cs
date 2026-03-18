@@ -1,15 +1,24 @@
 namespace economy.Models;
 
+using YamlDotNet.Serialization;
+
 public class Recipe
 {
-    public Dictionary<string, int> Input { get; set; }
-    public Dictionary<string, int> Output { get; set; }
+    [YamlMember(Alias = "inputs")]
+    public Dictionary<string, int> Inputs { get; set; } = new();
+
+    [YamlMember(Alias = "outputs")]
+    public Dictionary<string, int> Outputs { get; set; } = new();
+
+    [YamlMember(Alias = "steps")]
     public int Steps { get; set; }
 
     public Recipe(Dictionary<string, int> input, Dictionary<string, int> output, int steps = 1)
     {
-        Input = input;
-        Output = output;
+        Inputs = input;
+        Outputs = output;
         Steps = steps;
     }
+
+    public Recipe() { }
 }

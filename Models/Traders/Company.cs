@@ -65,7 +65,7 @@ public class Company
     public int GetOutputValue()
     {
         var val = 0;
-        foreach (var item in _recipe.Output)
+        foreach (var item in _recipe.Outputs)
         {
             val += Inventory[item.Key] * GetPrice(item.Key);
         }
@@ -85,13 +85,13 @@ public class Company
     public int CalculateProfit(Recipe recipe)
     {
         var cost = 0;
-        foreach (var item in recipe.Input)
+        foreach (var item in recipe.Inputs)
         {
             cost += GetPrice(item.Key) * item.Value;
         }
 
         var revenue = 0;
-        foreach (var item in recipe.Output)
+        foreach (var item in recipe.Outputs)
         {
             revenue += GetPrice(item.Key) * item.Value;
         }
@@ -119,7 +119,7 @@ public class Company
 
     private bool HasInputs()
     {
-        foreach (var item in _recipe.Input)
+        foreach (var item in _recipe.Inputs)
         {
             if (Inventory.GetValueOrDefault(item.Key, 0) < item.Value)
                 return false;
@@ -137,7 +137,7 @@ public class Company
 
             _buildingTasks.Enqueue(new BuildingTask(_recipe));
             // Subtract inputs
-            foreach (var item in _recipe.Input)
+            foreach (var item in _recipe.Inputs)
             {
                 Inventory[item.Key] -= item.Value;
             }
@@ -160,7 +160,7 @@ public class Company
             if (task.StepsCompleted >= task.Recipe.Steps)
             {
                 // Add outputs
-                foreach (var item in _recipe.Output)
+                foreach (var item in _recipe.Outputs)
                 {
                     if (!Inventory.ContainsKey(item.Key))
                         Inventory[item.Key] = 0;
@@ -379,7 +379,7 @@ public class Company
 
     private void BuyInputs(List<string> processed)
     {
-        foreach (var item in _recipe.Input)
+        foreach (var item in _recipe.Inputs)
         {
             processed.Add(item.Key);
             var numberBuy = (int)(item.Value * Preferences.ReserveInput * Inventory[Type]) - Inventory.GetValueOrDefault(item.Key, 0);
@@ -400,7 +400,7 @@ public class Company
         var excessValue = currentOutputValue - targetOutputValue;
         var frac = (float)excessValue / currentOutputValue;
 
-        foreach (var item in _recipe.Output)
+        foreach (var item in _recipe.Outputs)
         {
             processed.Add(item.Key);
             var numberSell = (int)(Inventory.GetValueOrDefault(item.Key, 0) * frac);
@@ -457,7 +457,7 @@ public class Company
         {
             Console.WriteLine();
             Console.WriteLine($"money:      {Money}");
-            Console.WriteLine($"Recipe:   {string.Join(", ", _recipe.Input.Select(i => $"{i.Value} {i.Key}"))} -> {string.Join(", ", _recipe.Output.Select(i => $"{i.Value} {i.Key}"))}");
+            Console.WriteLine($"Recipe:   {string.Join(", ", _recipe.Inputs.Select(i => $"{i.Value} {i.Key}"))} -> {string.Join(", ", _recipe.Outputs.Select(i => $"{i.Value} {i.Key}"))}");
             Console.WriteLine($"prices:     {string.Join(", ", Prices)}");
             Console.WriteLine($"prices_dev: {string.Join(", ", PricesDev)}");
             Console.WriteLine($"inventory:  {string.Join(", ", Inventory)}");
@@ -481,7 +481,7 @@ public class Company
             _recipe = GetBestRecipe();
         }
 
-        if (_recipe.Output.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
+        if (_recipe.Outputs.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
         {
             Process();
         }
@@ -492,7 +492,7 @@ public class Company
     public void Step()
     {
 
-        if (!_recipe.Output.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
+        if (!_recipe.Outputs.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
         {
             Process();
         }

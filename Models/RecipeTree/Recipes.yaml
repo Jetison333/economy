@@ -1,0 +1,23 @@
+items:
+- iron
+- crafter
+emphemeral_items:
+- power
+- labor
+recipes:
+  crafter:
+    -
+      inputs:
+        power: 1
+        labor: 1
+      outputs:
+        iron: 2
+      steps: 1
+    - 
+      inputs:
+        iron: 10
+        power: 5
+        labor: 5
+      outputs:
+        crafter: 1
+      steps: 5
