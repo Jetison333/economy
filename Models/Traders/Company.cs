@@ -466,15 +466,36 @@ public class Company
         }
     }
 
-    public void Step()
+    public void RemoveEphemeralItems()
+    {
+        foreach (var item in Recipes.EmphemeralItems)
+        {
+            Inventory[item] = 0;
+        }
+    }
+
+    public void Planning()
     {
         if (_random.NextDouble() < Preferences.RecipeChangeProb)
         {
             _recipe = GetBestRecipe();
         }
 
-        Process();
+        if (_recipe.Output.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
+        {
+            Process();
+        }
+
         Market();
+    }
+
+    public void Step()
+    {
+
+        if (!_recipe.Output.Keys.Any(k => Recipes.EmphemeralItems.Contains(k)))
+        {
+            Process();
+        }
         Log();
     }
 }

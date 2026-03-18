@@ -109,24 +109,21 @@ public class Market
 
     public void Step()
     {
-        foreach( var item in Recipes.Items)
+        foreach  (var item in Recipes.Items)
         {
             Volume[item] = 0;
         }
-        
+
+        foreach(var company in _companies)
+        {
+            company.RemoveEphemeralItems();
+            company.Planning();
+        }
+        Resolve();
         
         foreach (var company in _companies)
         {
             company.Step();
-        }
-        Resolve();
-
-        if (Prices["iron"] < 100)
-        {
-            foreach( var company in _companies)
-            {
-                company.Money = (int) (company.Money * 1.1);
-            }
         }
         
 
