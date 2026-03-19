@@ -4,7 +4,7 @@ public class Preferences
 {
     public double ReserveBuilding { get; set; } = 0.5;
     public double ReserveOutput { get; set; } = 0.5;
-    public double ReserveInput { get; set; } = 1.0;
+    public double ReserveInputSteps { get; set; } = 1.0;
     
     public string PriceSetter { get; set; } = "linear";
     public double MarketClearSlope { get; set; } = 0.05;

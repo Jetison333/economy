@@ -11,4 +11,8 @@
     <PackageReference Include="YamlDotNet" Version="15.1.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Models/RecipeTree/Recipes.yaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

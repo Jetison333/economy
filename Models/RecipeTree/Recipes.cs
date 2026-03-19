@@ -38,7 +38,8 @@ public static class Recipes
 
     private static string ReadFile()
     {
-        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Models/RecipeTree/Recipes.yaml");
+        var path = Path.Combine(AppContext.BaseDirectory, "Models/RecipeTree/Recipes.yaml");
+        
         return File.ReadAllText(path);
     }
 }

@@ -322,42 +322,56 @@ public class Company
         }
         foreach (var item in Recipes.Items)
         {
-            if (Bids.GetValueOrDefault(item, 0) + Asks.GetValueOrDefault(item, 0) + MarketSucc.GetValueOrDefault(item, 0) == 0)
+            int bids = Bids.GetValueOrDefault(item, 0);
+            int asks = Asks.GetValueOrDefault(item, 0);
+            int successes = MarketSucc.GetValueOrDefault(item, 0);
+            int totalActivity = bids + asks + successes;
+
+            if (totalActivity == 0)
             {
-                var slope = Preferences.MarketClearSlope;
-                var marketPrice = _market?.GetPrice(item) ?? Prices[item];
-                Prices[item] = (int)((1 - slope) * Prices[item] + slope * marketPrice);
+                UpdatePriceTowardsMarket(item);
             }
             else
             {
-                var succFrac = (float)MarketSucc.GetValueOrDefault(item, 0) / 
-                              (MarketSucc.GetValueOrDefault(item, 0) + Bids.GetValueOrDefault(item, 0) + Asks.GetValueOrDefault(item, 0));
-                
-                if (Bids.GetValueOrDefault(item, 0) > 0)
-                {
-                    Prices[item] += (int)((0.5 - succFrac) * PricesDev[item] * Preferences.PriceSlope);
-                }
-                else
-                {
-                    Prices[item] -= (int)((0.5 - succFrac) * PricesDev[item] * Preferences.PriceSlope);
-                }
-                var olddev = PricesDev[item];
-                PricesDev[item] += (int)((Math.Abs(2.0 * succFrac - 1.0) * 2.0 - 1.0) * Preferences.PriceDevSlope);
-                if (PricesDev[item] < 0)
-                {
-                    PricesDev[item] = 0;
-                }
+                UpdatePriceBySuccessRate(item, bids, successes, totalActivity);
             }
 
-            if (PricesDev[item] * 2 > Prices[item])
-            {
-                PricesDev[item] = Prices[item] / 2;
-            }
-
-            Bids[item] = 0;
-            Asks[item] = 0;
-            MarketSucc[item] = 0;
+            ConstrainPriceDeviation(item);
+            ResetActivityCounters(item);
         }
+    }
+
+    private void UpdatePriceTowardsMarket(string item)
+    {
+        var slope = Preferences.MarketClearSlope;
+        var marketPrice = _market.GetPrice(item);
+        Prices[item] = (int)((1 - slope) * Prices[item] + slope * marketPrice);
+    }
+
+    private void UpdatePriceBySuccessRate(string item, int bids, int successes, int totalActivity)
+    {
+        float successRate = (float)successes / totalActivity;
+        int priceAdjustment = (int)((0.5f - successRate) * PricesDev[item] * Preferences.PriceSlope);
+        
+        Prices[item] += bids > 0 ? priceAdjustment : -priceAdjustment;
+        
+        double deviationChange = (Math.Abs(2.0f * successRate - 1.0f) * 2.0f - 1.0f) * Preferences.PriceDevSlope;
+        PricesDev[item] = Math.Max(0, (int)(PricesDev[item] + deviationChange));
+    }
+
+    private void ConstrainPriceDeviation(string item)
+    {
+        if (PricesDev[item] * 2 > Prices[item])
+        {
+            PricesDev[item] = Prices[item] / 2;
+        }
+    }
+
+    private void ResetActivityCounters(string item)
+    {
+        Bids[item] = 0;
+        Asks[item] = 0;
+        MarketSucc[item] = 0;
     }
 
     public void MakeBid(string item, int num)
@@ -382,7 +396,11 @@ public class Company
         foreach (var item in _recipe.Inputs)
         {
             processed.Add(item.Key);
-            var numberBuy = (int)(item.Value * Preferences.ReserveInput * Inventory[Type]) - Inventory.GetValueOrDefault(item.Key, 0);
+            int numberBuy = (item.Value * Inventory[Type]) - Inventory.GetValueOrDefault(item.Key, 0);
+            if (!Recipes.EmphemeralItems.Contains(item.Key))
+            {
+                numberBuy = (int)(numberBuy * Preferences.ReserveInputSteps);
+            }
             if (numberBuy <= 0)
                 continue;
             MakeBid(item.Key, numberBuy);

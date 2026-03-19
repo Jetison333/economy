@@ -16,7 +16,7 @@ public class Market
 
     public Market()
     {
-        foreach (var item in Recipes.Items)
+        foreach (var item in Recipes.Items.Concat(Recipes.EmphemeralItems))
         {
             Orders[item] = new OrderBook();
             Volume[item] = 0;

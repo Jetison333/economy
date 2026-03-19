@@ -6,15 +6,14 @@ emphemeral_items:
 - labor
 recipes:
   crafter:
-    -
-      inputs:
+    - inputs:
         power: 1
         labor: 1
       outputs:
         iron: 2
       steps: 1
-    - 
-      inputs:
+      
+    - inputs:
         iron: 10
         power: 5
         labor: 5
